@@ -44,6 +44,7 @@ void PrintVect( float vect[N], int from, int numel ){
     for (int i = from; i < from + numel; i++) {
         printf("%f ", vect[i]);
     }
+    printf("\n");
 }
 
 void PrintRow( float mat[N][N], int row, int from, int numel ){
@@ -53,8 +54,9 @@ void PrintRow( float mat[N][N], int row, int from, int numel ){
     }
 
     for(int i=from;i<from+numel;i++){
-        print("%f ", mat[row][i]);
+        printf("%f ", mat[row][i]);
     }
+    printf("\n");
 }
 
 void MultEscalar( float vect[N], float vectres[N], float alfa ){
@@ -76,13 +78,11 @@ float Magnitude( float vect[N] ){
 }
 
 int Ortogonal( float vect1[N], float vect2[N] ){
-    for(int i=0; i<N;i++){
-        if(Scalar(vect1, vect2)==0){
-            return 1;
-        }
-        else{
-            return 0;
-        }
+    if(Scalar(vect1, vect2)==0){
+        return 1;
+    }
+    else{
+        return 0;
     }
 }
 
@@ -160,16 +160,179 @@ void Matriu_x_Vector( float M[N][N], float vect[N], float vectres[N] ){
     }
     for(int i=0;i<N;i++){
         for(int j=0;j<N;j++){
-            vectres[i]+=M[j][i]*vect[i];
+            vectres[i]+=M[i][j]*vect[j];
         }
     }
 }
 
 int Jacobi( float M[N][N] , float vect[N], float vectres[N], unsigned iter ){
+    // Comprovar si la matriu és diagonal dominant
+    if (DiagonalDom(M)==0) {
+        return 0;  // Retorna 0 si no es pot aplicar el mètode de Jacobi
+    }
 
+    // Realitzar les iteracions
+    for (unsigned k = 0; k < iter; k++) {
+        // Actualitzar la solució
+        for (int i = 0; i < N; i++) {
+            vectres[i] = M[i][N-1];  // Suposant que b és la darrera columna de M
+            for (int j = 0; j < N; j++) {
+                if (i != j) {
+                    vectres[i] -= M[i][j] * vect[j];
+                }
+            }
+            vectres[i] /= M[i][i];  // Dividir pel coeficient de la diagonal
+        }
+
+        // Actualitzar el vector de solucions per a la següent iteració
+        for (int i = 0; i < N; i++) {
+            vect[i] = vectres[i];
+        }
+    }
+    return 1;
 }
+
+
 
 int main(){
     InitData();  // Inicialitzar dades
+
+    //a
+    printf("V1 del 0 al 9 i del 256 al 265: \n");
+    PrintVect(V1, 0, 10);
+    PrintVect(V1, 256, 10);
+    printf("\n");
+
+    printf("V2 del 0 al 9 i del 256 al 265: \n");
+    PrintVect(V2, 0, 10);
+    PrintVect(V2, 256, 10);
+    printf("\n");
+
+    printf("V3 del 0 al 9 i del 256 al 265: \n");
+    PrintVect(V3, 0, 10);
+    PrintVect(V3, 256, 10);
+    printf("\n");
+
+    //b
+    printf("Mat fila 0 i fila 100 del 0 al 9: \n");
+    PrintRow(Mat, 0, 0, 10);
+    PrintRow(Mat, 100, 0, 10);
+    printf("\n");
+
+    //c
+    printf("MatDD fila 0 del 0 al 9 i fila 100 del 95 al 104: \n");
+    PrintRow(MatDD, 0, 0, 10);
+    PrintRow(MatDD, 100, 95, 10);
+    printf("\n");
+    
+    //d
+    printf("Infininorma de Mat = %f\n", Infininorm(Mat));
+    printf("Norma ú de Mat = %f\n", Onenorm(Mat));
+    printf("Norma de Frobenius de Mat = %f\n", NormFrobenius(Mat));  
+    if(DiagonalDom(Mat)==0){
+        printf("La matriu Mat no és diagonal dominant. \n");
+    }
+    else{
+        printf("La matriu Mat és diagonal dominant. \n");
+    }
+
+    printf("\n");
+
+    printf("Infininorma de MatDD = %f\n", Infininorm(MatDD));
+    printf("Norma ú de MatDD = %f\n", Onenorm(MatDD));
+    printf("Norma de Frobenius de MatDD = %f\n", NormFrobenius(MatDD));  
+    if(DiagonalDom(MatDD)==0){
+        printf("La matriu MatDD no és diagonal dominant. \n");
+    }
+    else{
+        printf("La matriu MatDD és diagonal dominant. \n");
+    }
+    printf("\n");
+
+    //e
+    printf("Escalar <V1,V2> = %f Escalar <V1,V3> = %f Escalar <V2,V3> = %f\n", Scalar(V1, V2), Scalar(V1, V3), Scalar(V2, V3));
+    printf("\n");
+    //f
+    printf("Magnitud V1,V2 i V3 = %f, %f, %f\n", Magnitude(V1), Magnitude(V2), Magnitude(V3));
+    printf("\n");
+    //g
+    if(Ortogonal(V1, V2)==1){
+        printf("V1 i V2 són ortogonals. \n");
+    }
+    else{
+        printf("V1 i V2 no són ortogonals. \n");
+    }
+
+    if(Ortogonal(V1, V3)==1){
+        printf("V1 i V3 són ortogonals. \n");
+    }
+    else{
+        printf("V1 i V3 no són ortogonals. \n");
+    }
+
+    if(Ortogonal(V2, V3)==1){
+        printf("V2 i V3 són ortogonals. \n");
+    }
+    else{
+        printf("V2 i V3 no són ortogonals. \n");
+    }
+    printf("\n");
+    //h
+    float VH[N];
+    // Multiplicació de V3 per l'escalar 2.0
+    MultEscalar(V3, VH, 2.0);
+
+    // Visualitzar els elements 0 al 9 i 256 al 265 de V3x2
+    printf("Els elements 0 al 9 i 256 al 265 del resultat de multiplicar V3x2.0 són:\n");
+    PrintVect(VH, 0, 10);
+    PrintVect(VH, 256, 10);
+    printf("\n");
+    //i
+    float VI1[N];
+    float VI2[N];
+    Projection(V2, V3, VI2);
+    Projection(V1, V2, VI1);
+    
+    printf("Els elements 0 a 9 del resultat de la projecció de V2 sobre V3 són:\n");
+    PrintVect(VI2, 0, 10);
+    printf("Els elements 0 a 9 del resultat de la projecció de V1 sobre V2 són:\n");
+    PrintVect(VI1, 0, 10);
+    printf("\n");
+    //j
+    float VJ[N];
+    Matriu_x_Vector(Mat, V2, VJ);
+    printf("Els elements 0 a 9 del resultat de la multiplicació de Mat per v2 són:\n");
+    PrintVect(VJ, 0, 10);
+    printf("\n");
+    //k
+    float VK[N];
+    Jacobi(MatDD, V3, VK, 1);
+    printf("Els elements 0 a 9 de la solució (1 iter) del sistema d'equacions són:\n");
+    PrintVect(VK, 0, 10);
+
+    // Tornar a inicialitzar X amb zeros
+    for (int i = 0; i < N; i++) {
+        VK[i] = 0.0;
+    }
+
+    // Calcular la solució amb 1000 iteracions
+    Jacobi(MatDD, V3, VK, 1000);
+    printf("Els elements 0 a 9 de la solució (1000 iters) del sistema d'equacions són:\n");
+    PrintVect(VK, 0, 10);
+
+    // Resoldre Mat * X = V3
+    // Tornar a inicialitzar X amb zeros
+    for (int i = 0; i < N; i++) {
+        VK[i] = 0.0;
+    }
+
+    // Comprovar si Mat és diagonal dominant
+    if (DiagonalDom(Mat) == 0) {
+        printf("La matriu Mat no és diagonal dominant, no es pot aplicar Jacobi.\n");
+    } else {
+        Jacobi(Mat, V3, VK, 1000);
+        printf("Els elements 0 a 9 de la solució (1000 iters) del sistema d'equacions Mat * X = V3 són:\n");
+        PrintVect(VK, 0, 10);
+    }
 
 }
