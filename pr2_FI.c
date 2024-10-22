@@ -33,6 +33,7 @@ void InitData() {
     }
 }
 
+#1
 void PrintVect( float vect[N], int from, int numel ){
 // Validem que 'from + numel' no excedeixi la mida del vector
     if (from + numel > N) {
@@ -47,6 +48,7 @@ void PrintVect( float vect[N], int from, int numel ){
     printf("\n");
 }
 
+#2
 void PrintRow( float mat[N][N], int row, int from, int numel ){
     if (from + numel > N) {
         printf("Error: El rang excedeix la mida del vector.\n");
@@ -59,12 +61,14 @@ void PrintRow( float mat[N][N], int row, int from, int numel ){
     printf("\n");
 }
 
+#3
 void MultEscalar( float vect[N], float vectres[N], float alfa ){
     for (int i=0;i<N;i++){
         vectres[i]=vect[i]*alfa;
     }
 }
 
+#4
 float Scalar( float vect1[N], float vect2[N] ){
     float scalar=0.0;
     for (int i=0;i<N;i++){
@@ -73,10 +77,12 @@ float Scalar( float vect1[N], float vect2[N] ){
     return scalar;
 }
 
+#5
 float Magnitude( float vect[N] ){
     return sqrt(Scalar(vect, vect));
 }
 
+#6
 int Ortogonal( float vect1[N], float vect2[N] ){
     if(Scalar(vect1, vect2)==0){
         return 1;
@@ -86,6 +92,7 @@ int Ortogonal( float vect1[N], float vect2[N] ){
     }
 }
 
+#7
 void Projection( float vect1[N], float vect2[N], float vectres[N] ){
     float numerador=Scalar(vect1, vect2);
     float denominador=Magnitude(vect2);
@@ -94,6 +101,7 @@ void Projection( float vect1[N], float vect2[N], float vectres[N] ){
     }
 }
 
+#8
 float Infininorm(float M[N][N]) {
     float maxSum = 0.0;  
     for (int i = 0; i < N; i++) {
@@ -108,6 +116,7 @@ float Infininorm(float M[N][N]) {
     return maxSum;  // Retorna la infini-norma
 }
 
+#9
 float Onenorm( float M[N][N] ){
     float maxSum = 0.0;  
     for (int i = 0; i < N; i++) { 
@@ -122,6 +131,7 @@ float Onenorm( float M[N][N] ){
     return maxSum;  
 }
 
+#10
 float NormFrobenius( float M[N][N] ){
     float sum=0.0;
     for(int i=0;i<N;i++){
@@ -132,6 +142,7 @@ float NormFrobenius( float M[N][N] ){
     return sqrt(sum);
 }
 
+#11
 int DiagonalDom( float M[N][N] ){
     float sumDiagonal=0.0;
     float sumValors=0.0;
@@ -154,6 +165,7 @@ int DiagonalDom( float M[N][N] ){
     }
 }
 
+#12
 void Matriu_x_Vector( float M[N][N], float vect[N], float vectres[N] ){
     for (int i = 0; i < N; i++) {
         vectres[i] = 0;  // Inicialitzar a 0 abans de sumar
@@ -165,31 +177,34 @@ void Matriu_x_Vector( float M[N][N], float vect[N], float vectres[N] ){
     }
 }
 
-int Jacobi( float M[N][N] , float vect[N], float vectres[N], unsigned iter ){
-    // Comprovar si la matriu és diagonal dominant
-    if (DiagonalDom(M)==0) {
-        return 0;  // Retorna 0 si no es pot aplicar el mètode de Jacobi
+#13
+int Jacobi(float M[N][N], float vect[N], float vectres[N], unsigned iter) {
+    // Comprovem si la matriu és diagonalment dominant
+    if (!DiagonalDom(M)) {
+        return 0;  // No es pot aplicar el mètode de Jacobi
     }
 
-    // Realitzar les iteracions
+    float xnew[N];  // Vector temporal per a les noves solucions
+
+    // Iteracions del mètode de Jacobi
     for (unsigned k = 0; k < iter; k++) {
-        // Actualitzar la solució
         for (int i = 0; i < N; i++) {
-            vectres[i] = M[i][N-1];  // Suposant que b és la darrera columna de M
+            float sum = 0;
             for (int j = 0; j < N; j++) {
                 if (i != j) {
-                    vectres[i] -= M[i][j] * vect[j];
+                    sum += M[i][j] * vectres[j];
                 }
             }
-            vectres[i] /= M[i][i];  // Dividir pel coeficient de la diagonal
+            xnew[i] = (vect[i] - sum) / M[i][i];
         }
 
-        // Actualitzar el vector de solucions per a la següent iteració
+        // Actualitzem el vector de resultats
         for (int i = 0; i < N; i++) {
-            vect[i] = vectres[i];
+            vectres[i] = xnew[i];
         }
     }
-    return 1;
+
+    return 1;  // El mètode de Jacobi s'ha aplicat correctament
 }
 
 
@@ -252,9 +267,11 @@ int main(){
     //e
     printf("Escalar <V1,V2> = %f Escalar <V1,V3> = %f Escalar <V2,V3> = %f\n", Scalar(V1, V2), Scalar(V1, V3), Scalar(V2, V3));
     printf("\n");
+
     //f
     printf("Magnitud V1,V2 i V3 = %f, %f, %f\n", Magnitude(V1), Magnitude(V2), Magnitude(V3));
     printf("\n");
+
     //g
     if(Ortogonal(V1, V2)==1){
         printf("V1 i V2 són ortogonals. \n");
@@ -277,6 +294,7 @@ int main(){
         printf("V2 i V3 no són ortogonals. \n");
     }
     printf("\n");
+
     //h
     float VH[N];
     // Multiplicació de V3 per l'escalar 2.0
@@ -287,6 +305,7 @@ int main(){
     PrintVect(VH, 0, 10);
     PrintVect(VH, 256, 10);
     printf("\n");
+
     //i
     float VI1[N];
     float VI2[N];
@@ -298,19 +317,21 @@ int main(){
     printf("Els elements 0 a 9 del resultat de la projecció de V1 sobre V2 són:\n");
     PrintVect(VI1, 0, 10);
     printf("\n");
+
     //j
     float VJ[N];
     Matriu_x_Vector(Mat, V2, VJ);
     printf("Els elements 0 a 9 del resultat de la multiplicació de Mat per v2 són:\n");
     PrintVect(VJ, 0, 10);
     printf("\n");
+
     //k
     float VK[N];
     Jacobi(MatDD, V3, VK, 1);
     printf("Els elements 0 a 9 de la solució (1 iter) del sistema d'equacions són:\n");
     PrintVect(VK, 0, 10);
 
-    // Tornar a inicialitzar X amb zeros
+    // Tornar a inicialitzar VK amb zeros
     for (int i = 0; i < N; i++) {
         VK[i] = 0.0;
     }
@@ -321,7 +342,7 @@ int main(){
     PrintVect(VK, 0, 10);
 
     // Resoldre Mat * X = V3
-    // Tornar a inicialitzar X amb zeros
+    // Tornar a inicialitzar VK amb zeros
     for (int i = 0; i < N; i++) {
         VK[i] = 0.0;
     }
@@ -334,5 +355,6 @@ int main(){
         printf("Els elements 0 a 9 de la solució (1000 iters) del sistema d'equacions Mat * X = V3 són:\n");
         PrintVect(VK, 0, 10);
     }
+    printf("\n");
 
 }
