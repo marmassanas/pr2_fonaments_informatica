@@ -50,11 +50,12 @@ void PrintVect( float vect[N], int from, int numel ){
 
 #2
 void PrintRow( float mat[N][N], int row, int from, int numel ){
+    // Validem que 'from + numel' no excedeixi la mida del vector
     if (from + numel > N) {
         printf("Error: El rang excedeix la mida del vector.\n");
         return;
     }
-
+    //imprimeix els elements seleccionats d’una fila específica d'una matriu.
     for(int i=from;i<from+numel;i++){
         printf("%f ", mat[row][i]);
     }
@@ -63,6 +64,7 @@ void PrintRow( float mat[N][N], int row, int from, int numel ){
 
 #3
 void MultEscalar( float vect[N], float vectres[N], float alfa ){
+    //multiplica un vector per un escalar (alfa) i ho guarda a un vector nou (vectres)
     for (int i=0;i<N;i++){
         vectres[i]=vect[i]*alfa;
     }
@@ -70,6 +72,7 @@ void MultEscalar( float vect[N], float vectres[N], float alfa ){
 
 #4
 float Scalar( float vect1[N], float vect2[N] ){
+    //calcula el producte escalar entre dos vectors
     float scalar=0.0;
     for (int i=0;i<N;i++){
         scalar+=(vect1[i]*vect2[i]);
@@ -79,14 +82,18 @@ float Scalar( float vect1[N], float vect2[N] ){
 
 #5
 float Magnitude( float vect[N] ){
+    //calcula la magnitud d'un vector utilitzant la funció Scalar per obtenir el quadrat de la magnitud i després retorna l'arrel quadrada
     return sqrt(Scalar(vect, vect));
 }
 
 #6
 int Ortogonal( float vect1[N], float vect2[N] ){
+    //determina si dos vectors són ortogonals
+    //Si el producte escalar és zero i per tant són ortogonals, retorna 1
     if(Scalar(vect1, vect2)==0){
         return 1;
     }
+    //sino retorna 0
     else{
         return 0;
     }
@@ -94,22 +101,24 @@ int Ortogonal( float vect1[N], float vect2[N] ){
 
 #7
 void Projection( float vect1[N], float vect2[N], float vectres[N] ){
+    //calcula la projecció d'un vector (vect1) sobre un altre vector (vect2)
+    //obtenir el producte escalar dels dos vectors
     float numerador=Scalar(vect1, vect2);
+    //calcula la magnitud de vect2
     float denominador=Magnitude(vect2);
-    for (int i=0;i<N;i++){
-        vectres[i]=(numerador/denominador)*vect2[i];
-    }
+    MultEscalar(vect2, vectres, numerador/denominador);
 }
 
 #8
 float Infininorm(float M[N][N]) {
+    //calcula la infini-norma d'una matriu, que és el màxim de les sumes dels valors absoluts de cada fila
     float maxSum = 0.0;  
     for (int i = 0; i < N; i++) {
         float rowSum = 0.0;  // Suma dels valors absoluts de la fila
-        for (int j = 0; j < N; j++) {
-            rowSum += fabs(M[i][j]);
+        for (int j = 0; j < N; j++) { //recorrem la matriu
+            rowSum += fabs(M[i][j]); //sumem el valor absolut de cada casella de la fila a rowSum
         }
-        if (rowSum > maxSum) {
+        if (rowSum > maxSum) { //comparem valors per obtenir el més gran
             maxSum = rowSum;
         }
     }
@@ -118,13 +127,14 @@ float Infininorm(float M[N][N]) {
 
 #9
 float Onenorm( float M[N][N] ){
+    // calcula la norma 1 d'una matriu, que és el màxim de les sumes de les columnes.
     float maxSum = 0.0;  
     for (int i = 0; i < N; i++) { 
-        float colSum = 0.0; 
-        for (int j = 0; j < N; j++) {
-            colSum += fabs(M[j][i]);
+        float colSum = 0.0; // Suma dels valors absoluts de la columna
+        for (int j = 0; j < N; j++) { //recorrem la matriu verticalment
+            colSum += fabs(M[j][i]); //sumem el valor absolut de cada casella de la columna a colSum
         }
-        if (colSum > maxSum) {
+        if (colSum > maxSum) { //comparem valors per obtenir el més gran
             maxSum = colSum;
         }
     }
@@ -133,46 +143,51 @@ float Onenorm( float M[N][N] ){
 
 #10
 float NormFrobenius( float M[N][N] ){
+    //calcula la norma de Frobenius d'una matriu
     float sum=0.0;
     for(int i=0;i<N;i++){
         for(int j=0;j<N;j++){
-            sum+=M[i][j]*M[i][j];
+            sum+=M[i][j]*M[i][j]; //sumant els quadrats de tots els elements de la matriu
         }
     }
-    return sqrt(sum);
+    return sqrt(sum); //retornant de l'arrel quadrada del resultat
 }
 
 #11
 int DiagonalDom( float M[N][N] ){
+    //comprova si una matriu és diagonal dominant
     float sumDiagonal=0.0;
     float sumValors=0.0;
-
+    //compara la suma dels valors absoluts fora de la diagonal amb el valor absolut de la suma dels elements diagonals
     for(int i=0;i<N;i++){
-        for(int j=0;j<N;j++){
+        for(int j=0;j<N;j++){//recorrem la matriu
             if(i==j){
-                sumDiagonal+=M[i][j];
+                sumDiagonal+=M[i][j];//suma dels valors absoluts dels elements diagonals
             }
             else{
-                sumValors+=fabs(M[i][j]);
+                sumValors+=fabs(M[i][j]); //suma dels valors absoluts fora de la diagonal
             }
         }
     }
     if(fabs(sumDiagonal)>sumValors){
+        //si la suma dels valors de la diagonal és major a la suma de la resta de valors, significa que és dominant i per tant retorna 1
         return 1;
     }
     else{
+        //sino no és dominant i retorna 0
         return 0;
     }
 }
 
 #12
 void Matriu_x_Vector( float M[N][N], float vect[N], float vectres[N] ){
+    //realitza la multiplicació d'una matriu per un vector
     for (int i = 0; i < N; i++) {
-        vectres[i] = 0;  // Inicialitzar a 0 abans de sumar
+        vectres[i] = 0;  // Inicialitzar a 0 abans de sumar del vector on es guarda el resultat
     }
     for(int i=0;i<N;i++){
-        for(int j=0;j<N;j++){
-            vectres[i]+=M[i][j]*vect[j];
+        for(int j=0;j<N;j++){//recorrem la matriu i el vector
+            vectres[i]+=M[i][j]*vect[j]; //sumem els productes de cada element corresponent i ho guardem a vect
         }
     }
 }
