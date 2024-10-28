@@ -187,7 +187,7 @@ void Matriu_x_Vector( float M[N][N], float vect[N], float vectres[N] ){
     }
     for(int i=0;i<N;i++){
         for(int j=0;j<N;j++){//recorrem la matriu i el vector
-            vectres[i]+=M[i][j]*vect[j]; //sumem els productes de cada element corresponent i ho guardem a vect
+            vectres[i]+=M[i][j]*vect[j]; //sumem els productes de cada element corresponent i ho guardem a vectres
         }
     }
 }
