@@ -147,7 +147,7 @@ float NormFrobenius( float M[N][N] ){
     float sum=0.0;
     for(int i=0;i<N;i++){
         for(int j=0;j<N;j++){
-            sum+=M[i][j]*M[i][j]; //sumant els quadrats de tots els elements de la matriu
+            sum+=pow(M[i][j],2);//sumant els quadrats de tots els elements de la matriu
         }
     }
     return sqrt(sum); //retornant de l'arrel quadrada del resultat
